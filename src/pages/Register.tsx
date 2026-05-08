@@ -9,10 +9,17 @@ export default function RegisterPage() {
   const [storeName, setStoreName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const { mutate, isPending, error } = useRegister()
 
+  const passwordsDoNotMatch =
+    password !== '' &&
+    confirmPassword !== '' &&
+    password !== confirmPassword
+
   const handleSubmit = () => {
-    if (!storeName || !email || !password) return
+    if (!storeName || !email || !password || !confirmPassword) return
+    if (password !== confirmPassword) return
     mutate({ storeName, email, password })
   }
 
@@ -33,14 +40,19 @@ export default function RegisterPage() {
             <FormField id="storeName" label="Nome da loja" placeholder="Mercadinho do João" value={storeName} onChange={setStoreName} />
             <FormField id="email" label="Email" type="email" placeholder="voce@email.com" value={email} onChange={setEmail} />
             <FormField id="password" label="Senha" type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={setPassword} />
-
+            <FormField id="confirmPassword" label="Confirmar senha" type="password" placeholder="Confirme sua senha" value={confirmPassword} onChange={setConfirmPassword} />
+            {passwordsDoNotMatch && (
+              <p className="text-xs text-destructive">
+                As senhas não coincidem
+              </p>
+            )}
             {error && (
               <p className="text-xs text-destructive bg-destructive/10 px-3 py-2 rounded-md">
                 Não foi possível criar a conta. Tente outro email.
               </p>
             )}
 
-            <Button onClick={handleSubmit} disabled={isPending} className="w-full mt-1">
+            <Button onClick={handleSubmit} disabled={isPending || !!passwordsDoNotMatch} className="w-full mt-1">
               {isPending ? 'Criando conta...' : 'Criar conta'}
             </Button>
 
