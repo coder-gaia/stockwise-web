@@ -1,75 +1,183 @@
-# React + TypeScript + Vite
+# Stockwise Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for the Stockwise inventory management system.
 
-Currently, two official plugins are available:
+Built with React, Vite, TypeScript, TanStack Query, and shadcn/ui.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Related repositories
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- Frontend: https://github.com/seu-user/stockwise-web
+- API: https://github.com/seu-user/stockwise-api
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- JWT authentication
+- Automatic token refresh
+- Offline inventory operations
+- Optimistic UI updates
+- Background synchronization
+- PWA support
+- Responsive interface
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Offline-first strategy
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Designed for environments with unstable connectivity.
+
+### Offline movement flow
+
+```txt
+User submits movement
+↓
+navigator.onLine?
+├── YES → send immediately
+└── NO  → save locally in IndexedDB
+↓
+optimistic UI updates stock instantly
+↓
+connection restored
+↓
+pending queue replayed automatically
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## IndexedDB queue
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Pending operations are persisted using IndexedDB via `idb`.
+
+Each queued operation contains:
+
+- product id
+- movement type
+- quantity
+- timestamp
+- idempotency key
+
+This ensures operations survive:
+
+- page refreshes
+- browser restarts
+- temporary disconnections
+
+---
+
+## Optimistic updates
+
+Stock changes appear instantly in the UI before server confirmation.
+
+If synchronization fails:
+
+- the cache rolls back safely
+- the user receives feedback
+- queued operations remain persisted
+
+---
+
+## Authentication flow
+
+### Access token
+
+Stored only in memory.
+
+Never persisted in:
+
+- localStorage
+- sessionStorage
+
+### Refresh token
+
+Stored in:
+
+```txt
+httpOnly cookie
+```
+
+### Automatic refresh
+
+```txt
+401 response
+↓
+Axios interceptor
+↓
+POST /auth/refresh
+↓
+retry original request
+```
+
+Transparent to the user.
+
+---
+
+## Tech stack
+
+| Layer           | Technology     |
+| --------------- | -------------- |
+| Framework       | React          |
+| Build tool      | Vite           |
+| Language        | TypeScript     |
+| Styling         | Tailwind CSS   |
+| UI library      | shadcn/ui      |
+| Server state    | TanStack Query |
+| Validation      | Zod            |
+| HTTP client     | Axios          |
+| Offline storage | idb            |
+| Routing         | React Router   |
+
+---
+
+## Running locally
+
+### Requirements
+
+- Node.js 18+
+- Stockwise API running locally
+
+---
+
+### Installation
+
+```bash
+git clone https://github.com/seu-user/stockwise-web
+cd stockwise-web
+
+npm install
+```
+
+---
+
+### Environment variables
+
+Create a `.env` file.
+
+```env
+VITE_API_URL=http://localhost:3333
+```
+
+---
+
+### Start development server
+
+```bash
+npm run dev
+```
+
+Application:
+
+```txt
+http://localhost:5173
+```
+
+---
+
+## Demo credentials
+
+```txt
+demo@stockwise.app
+demo123
 ```
