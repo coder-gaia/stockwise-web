@@ -19,7 +19,7 @@ export function Sidebar({ pendingCount }: SidebarProps) {
   const isOnline = useOnlineStatus()
 
   return (
-    <aside className="w-60 h-screen flex flex-col border-r border-border bg-card px-4 py-6 shrink-0">
+    <aside className="hidden md:flex w-60 h-screen flex-col border-r border-border bg-card px-4 py-6 shrink-0">
       <div className="px-2 mb-8">
         <span className="text-lg font-semibold tracking-tight">Stockwise</span>
         <p className="text-xs text-muted-foreground mt-0.5">Gestão de estoque</p>

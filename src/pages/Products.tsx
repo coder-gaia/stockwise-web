@@ -80,45 +80,79 @@ export default function ProductsPage() {
           }
         />
       ) : (
-        <div className="border border-border rounded-lg overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/40">
-                {['Produto', 'Estoque', 'Mínimo', 'Validade', ''].map((h, i) => (
-                  <th key={i} className={cn(
-                    'py-3 px-4 text-xs font-medium text-muted-foreground',
-                    i === 0 ? 'text-left' : 'text-right'
-                  )}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product: Product, i: number) => (
-                <tr key={product.id} className={cn('group', i < products.length - 1 && 'border-b border-border')}>
-                  <td className="px-4 py-3 text-sm font-medium">{product.name}</td>
-                  <td className="px-4 py-3 text-right"><StockCell product={product} /></td>
-                  <td className="px-4 py-3 text-right text-sm text-muted-foreground">{product.minStock}</td>
-                  <td className="px-4 py-3 text-right text-sm text-muted-foreground">
-                    {product.expiresAt ? new Date(product.expiresAt).toLocaleDateString('pt-BR') : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => setMovementDialog({ open: true, product })} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Movimentação">
-                        <ArrowLeftRight size={13} />
-                      </button>
-                      <button onClick={() => setProductDialog({ open: true, product })} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Editar">
-                        <Pencil size={13} />
-                      </button>
-                      <button onClick={() => setDeleteDialog({ open: true, product })} className="p-1.5 rounded-md hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors" title="Excluir">
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          <div className="hidden md:block border border-border rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border bg-muted/40">
+                  {['Produto', 'Estoque', 'Mínimo', 'Validade', ''].map((h, i) => (
+                    <th key={i} className={cn(
+                      'py-3 px-4 text-xs font-medium text-muted-foreground',
+                      i === 0 ? 'text-left' : 'text-right'
+                    )}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {products.map((product: Product, i: number) => (
+                  <tr key={product.id} className={cn('group', i < products.length - 1 && 'border-b border-border')}>
+                    <td className="px-4 py-3 text-sm font-medium">{product.name}</td>
+                    <td className="px-4 py-3 text-right"><StockCell product={product} /></td>
+                    <td className="px-4 py-3 text-right text-sm text-muted-foreground">{product.minStock}</td>
+                    <td className="px-4 py-3 text-right text-sm text-muted-foreground">
+                      {product.expiresAt ? new Date(product.expiresAt).toLocaleDateString('pt-BR') : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => setMovementDialog({ open: true, product })} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Movimentação">
+                          <ArrowLeftRight size={13} />
+                        </button>
+                        <button onClick={() => setProductDialog({ open: true, product })} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Editar">
+                          <Pencil size={13} />
+                        </button>
+                        <button onClick={() => setDeleteDialog({ open: true, product })} className="p-1.5 rounded-md hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors" title="Excluir">
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="md:hidden flex flex-col gap-3">
+            {products.map((product: Product) => (
+              <div key={product.id} className="border border-border rounded-lg p-4 bg-card">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 min-w-0 pr-3">
+                    <p className="text-sm font-medium truncate">{product.name}</p>
+                    {product.expiresAt && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Validade: {new Date(product.expiresAt).toLocaleDateString('pt-BR')}
+                      </p>
+                    )}
+                  </div>
+                  <StockCell product={product} />
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t border-border">
+                  <span className="text-xs text-muted-foreground">Mínimo: {product.minStock}</span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setMovementDialog({ open: true, product })} className="p-2 rounded-md hover:bg-secondary text-muted-foreground transition-colors">
+                      <ArrowLeftRight size={14} />
+                    </button>
+                    <button onClick={() => setProductDialog({ open: true, product })} className="p-2 rounded-md hover:bg-secondary text-muted-foreground transition-colors">
+                      <Pencil size={14} />
+                    </button>
+                    <button onClick={() => setDeleteDialog({ open: true, product })} className="p-2 rounded-md hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <ProductDialog open={productDialog.open} onClose={() => setProductDialog({ open: false })} product={productDialog.product} />

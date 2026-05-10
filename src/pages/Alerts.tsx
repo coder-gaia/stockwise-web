@@ -33,7 +33,7 @@ export default function AlertsPage() {
               product.currentStock === 0 ? 'border-red-200 bg-red-50/40' : 'border-yellow-200 bg-yellow-50/30'
             )}>
               <div>
-                <p className="text-sm font-medium">{product.name}</p>
+                <p className="text-sm font-medium truncate max-w-[180px] sm:max-w-none">{product.name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Mínimo: {product.minStock} unidades</p>
               </div>
               <div className="flex items-center gap-3">
